@@ -1,0 +1,74 @@
+const int maxn = 50+10;
+const int maxm = 625+10;
+struct INFO {
+    ll a,b,c,d;
+};
+struct SK {
+    int pos, stp, flag;
+} sk[maxn];
+int n,k,t1,t2,t3,t4,cnt,mxt; ll ans;
+vector<INFO> arr[maxn];
+int main(){
+    clock_t st = clock();
+    int t; scanf("%d",&t);
+    while(t--) {
+        scanf("%d%d",&n,&k);
+        for (int i = 1; i<=n; ++i) {
+            int a,b,c,d,e; scanf("%d%d%d%d%d",&a,&b,&c,&d,&e);
+            arr[a].push_back({b,c,d,e});
+        }
+        t1 = t2 = t3 = t4 = 100; ans = 0; 
+        int top = 0; 
+        sk[++top] = {1,0,0};
+        sk[++top] = {1,0,1};
+        while(top) {
+            ++cnt;
+            mxt = max(mxt,top);
+            SK t5 = sk[top--];
+            //cout << t5.pos << ' ' << t5.stp << ' ' << t5.flag << endl;
+            if (t5.pos>k) {
+                //cout << (ll)t1*t2*t3*t4 << endl;
+                ans = max(ans, (ll)t1*t2*t3*t4);
+                continue;
+            }
+            if (arr[t5.pos].empty()) {
+                if (t5.flag) {
+                    sk[++top] = {t5.pos, 0, 0};
+                    sk[++top] = {t5.pos+1, 0, 1};
+                }
+                continue;
+            }
+            if (t5.flag) {
+                t1 += arr[t5.pos][t5.stp].a;
+                t2 += arr[t5.pos][t5.stp].b;
+                t3 += arr[t5.pos][t5.stp].c;
+                t4 += arr[t5.pos][t5.stp].d;
+                sk[++top] = {t5.pos, t5.stp, 0};
+                sk[++top] = {t5.pos+1, 0, 1};
+            }
+            else if (t5.stp+1<(int)arr[t5.pos].size()) {
+                t1 -= arr[t5.pos][t5.stp].a;
+                t2 -= arr[t5.pos][t5.stp].b;
+                t3 -= arr[t5.pos][t5.stp].c;
+                t4 -= arr[t5.pos][t5.stp].d;
+                t1 += arr[t5.pos][t5.stp+1].a;
+                t2 += arr[t5.pos][t5.stp+1].b;
+                t3 += arr[t5.pos][t5.stp+1].c;
+                t4 += arr[t5.pos][t5.stp+1].d;
+                sk[++top] = {t5.pos, t5.stp+1, 0};
+                sk[++top] = {t5.pos+1, 0, 1};
+            }
+            else {
+                t1 -= arr[t5.pos][t5.stp].a;
+                t2 -= arr[t5.pos][t5.stp].b;
+                t3 -= arr[t5.pos][t5.stp].c;
+                t4 -= arr[t5.pos][t5.stp].d;
+            }
+        } 
+        for (int i = 1; i<=k; ++i) arr[i].clear();
+        printf("%lld\n",ans);
+    }
+    clock_t ed = clock();
+    printf("用时：%lfs cnt = %d mxt = %d\n",(double)(ed-st)/CLOCKS_PER_SEC,cnt,mxt);
+    return 0;
+}
